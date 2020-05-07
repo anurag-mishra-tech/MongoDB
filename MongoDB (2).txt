@@ -1,0 +1,88 @@
+MongoDB startup commands : 
+
+1. md \data
+
+2. md \data\db
+
+ -----------  \data\db - check databases
+ -----------  db.collection.stats() & db.stats() - check databases status and memory allocations
+ 
+
+3. Open a new command prompt 
+
+4. mongo
+
+5. Insert Data using command > db.users.insert ({"name" : "Anurag Mishra"})
+
+MongoDB > Document > Basic JSON Object 
+
+
+-- CMD commands
+
+>use learning_mongo
+
+>show dbs
+
+>show collections
+
+>db.numbers.find({"number":1})
+
+>db.numbers.find({"number":1}).explain()
+
+>db.numbers.find({"number":1}).explain("executionStats")
+
+>db.numbers.createIndex({number:1})
+
+>db.numbers.count()
+
+> Using index can reduce data fetching in large databases so the shell does have to scan all the documents
+
+//Exercise
+
+>mongoimport --db learning_mongo --collection tours --jsonArray --file tours.json
+
+{ "_id" : ObjectId("5ea6e4cee0dc15074e9ac15c"), "tourLength" : 3, "tourPrice" : 750, "tourDescription" : "Our 3-day tour allows", "tourTags" : [ "backpacking", "Big Sur", "hiking" ] }
+
+> db.tours.update({ "tourDescription" : "Our 3-day tour allows"}, { $addToSet:{"tourTags":"anurag"}})
+
+> db.tours.update({ "tourDescription" : "Our 3-day tour allows"}, { $set : {"tourDescr": "MongoDB Setup"}})
+
+> db.tours.remove({ "tourDescription" : "Our 3-day tour allows"})
+
+> db.tours.drop()
+
+> db.tours.createIndex({tourPackage:1})
+
+> db.tours.find({"tourPackage":"Taste of California"}).explain("executionStats")
+
+> db.tours.find(
+... {"tourPrice":{$lte:500},
+... "tourLength":{$lte:300})
+
+> db.tours.createIndex({"tourName":1},{unique:true}) -- Primary Key  (Use Drop to remove all the index in the collections)
+
+> db.tours.find({},{tourName:1,tourDescription:1,_id:0}).pretty().sort({tourPrice:-1}).limit(1).skip(20) -- Where query conditions for MongoDB
+
+> db.tours.find({"tourPrice":{$lte:500,$gte:800}) -- Limit Data using operators
+
+> db.tours.createIndex({tourDescription:"text",tourBlurb:"text"}) -- Text Indexes 
+
+> db.tours.find({$text: {$search:"wine"}}).pretty() ---- Text Search in MongoDB 
+
+> db.tours.find({$text: {$search:"wine"}},{score :{$meta:"textScore"}}).pretty() ---- Meta Text Score in MongoDB 
+
+> db.tours.find({$text: {$search:"wine"}},{score :{$meta:"textScore"},tourName:1,_id:0}).pretty().sort({score :{$meta:"textScore"}}) ---- Meta Tour Name , Text Score and sorting in MongoDB 
+
+> Search through regex using command in /*/ in find() command
+
+> db.tours.count({tourPackage:"Cycle of California"}) > Count Function in MongoDB
+
+> db.tours.aggregrate([{$group :{_id:'$tourPackage',count :{'$sum:1'}}}]) > Aggregrate Function in MongoDB
+
+> db.tours.aggregrate([{$group :{_id:'$tourOrganizer.organizerName',count :{'$sum:1'}}}]) > Aggregrate count Function in MongoDB
+
+> db.tours.aggregrate([{$group :{_id:'$tourOrganizer.organizerName',average :{$avg:'$tourPrice'},count :{'$sum:1'}}}]) > Aggregrate avg Function in MongoDB
+
+> db.tours.aggregrate([{$group :{_id:'$tourOrganizer.organizerName',average :{$avg:'$tourPrice'},count :{'$sum:1'}} , {$out: 'prices'}}]) > other collection to save the aggregrate data Function in MongoDB
+
+
